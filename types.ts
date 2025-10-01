@@ -8,6 +8,7 @@ export enum Screen {
   INTERVIEW,
   FEEDBACK,
   PROFILE,
+  RESOURCES,
   TEST,
   TEST_RESULTS,
 }
@@ -83,4 +84,10 @@ export interface TestResult {
     score: number; // percentage
     feedback: string;
     passed: boolean;
+}
+
+export interface Article {
+  title: string;
+  content: string;
+  imageUrl: string;
 }

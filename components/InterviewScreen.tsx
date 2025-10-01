@@ -3,8 +3,72 @@ import { Chat } from '@google/genai';
 import { InterviewData, ChatMessage, MessageSender, PausedInterview, Screen, User } from '../types';
 import { initializeChat, continueChatStream, generateFeedback } from '../services/geminiService';
 import ChatMessageBubble from './ChatMessageBubble';
-import { SendIcon, BotIcon, PauseIcon, SkipIcon, PreviousIcon, NextIcon } from './icons';
+import { SendIcon, BotIcon, PauseIcon, SkipIcon, PreviousIcon, NextIcon, MicrophoneIcon } from './icons';
 import LoadingSpinner from './LoadingSpinner';
+
+// Define the types for the Speech Recognition API for cross-browser compatibility
+// FIX: Added full type definitions for the Web Speech API to resolve TypeScript errors.
+declare global {
+    interface Window {
+        SpeechRecognition: typeof SpeechRecognition;
+        webkitSpeechRecognition: typeof SpeechRecognition;
+    }
+
+    interface SpeechRecognitionAlternative {
+        readonly transcript: string;
+        readonly confidence: number;
+    }
+
+    interface SpeechRecognitionResult {
+        readonly isFinal: boolean;
+        readonly length: number;
+        item(index: number): SpeechRecognitionAlternative;
+        [index: number]: SpeechRecognitionAlternative;
+    }
+
+    interface SpeechRecognitionResultList {
+        readonly length: number;
+        item(index: number): SpeechRecognitionResult;
+        [index: number]: SpeechRecognitionResult;
+    }
+
+    interface SpeechRecognitionEvent extends Event {
+        readonly resultIndex: number;
+        readonly results: SpeechRecognitionResultList;
+    }
+
+    type SpeechRecognitionErrorCode =
+        | 'no-speech'
+        | 'aborted'
+        | 'audio-capture'
+        | 'network'
+        | 'not-allowed'
+        | 'service-not-allowed'
+        | 'bad-grammar'
+        | 'language-not-supported';
+
+    interface SpeechRecognitionErrorEvent extends Event {
+        readonly error: SpeechRecognitionErrorCode;
+        readonly message: string;
+    }
+
+    interface SpeechRecognition extends EventTarget {
+        continuous: boolean;
+        interimResults: boolean;
+        lang: string;
+        onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+        onend: ((this: SpeechRecognition, ev: Event) => any) | null;
+        onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+        onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
+        start(): void;
+        stop(): void;
+    }
+
+    var SpeechRecognition: {
+        prototype: SpeechRecognition;
+        new(): SpeechRecognition;
+    };
+}
 
 interface InterviewScreenProps {
   user: User;
@@ -14,10 +78,11 @@ interface InterviewScreenProps {
   onPause: (session: PausedInterview) => void;
   onNavigate: (screen: Screen) => void;
   language: string;
+  t: (key: string) => string;
 }
 
 const InterviewScreen: React.FC<InterviewScreenProps> = ({ 
-    user, interviewData, initialMessages, onShowFeedback, onPause, onNavigate, language 
+    user, interviewData, initialMessages, onShowFeedback, onPause, onNavigate, language, t 
 }) => {
   const [chat, setChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
@@ -30,6 +95,12 @@ const InterviewScreen: React.FC<InterviewScreenProps> = ({
   const [reviewQuestionIndex, setReviewQuestionIndex] = useState<number | null>(null);
   const messageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // State and ref for Speech-to-Text
+  const [isRecording, setIsRecording] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
 
   const questionIndices = useMemo(() => 
     messages.reduce((acc, msg, index) => {
@@ -57,6 +128,59 @@ const InterviewScreen: React.FC<InterviewScreenProps> = ({
   useEffect(() => {
     messageRefs.current = messageRefs.current.slice(0, messages.length);
   }, [messages]);
+
+  useEffect(() => {
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
+      console.warn("Speech recognition not supported in this browser.");
+      setSpeechSupported(false);
+      return;
+    }
+    setSpeechSupported(true);
+
+    const recognition = new SpeechRecognitionAPI();
+    recognition.continuous = true;
+    recognition.interimResults = false; // Only process final results for simplicity
+    recognition.lang = language;
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+    };
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          transcript += event.results[i][0].transcript + ' ';
+        }
+      }
+      if (transcript) {
+        setUserInput(prev => (prev.trim() + ' ' + transcript.trim()).trim());
+      }
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error('Speech recognition error', event.error);
+      if (event.error === 'not-allowed') {
+        setError('Microphone access was denied. Please allow it in your browser settings to use this feature.');
+      } else {
+        setError(`Speech recognition error: ${event.error}`);
+      }
+      setIsRecording(false);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+    
+    recognitionRef.current = recognition;
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, [language]);
   
   const initInterview = useCallback(async () => {
     setIsLoading(true);
@@ -157,11 +281,25 @@ const InterviewScreen: React.FC<InterviewScreenProps> = ({
     }
   }
 
+  const handleMicClick = () => {
+    if (!recognitionRef.current || !speechSupported) return;
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+    } else {
+      setError('');
+      setReviewQuestionIndex(null);
+      recognitionRef.current.start();
+    }
+  };
+
   const isReviewing = reviewQuestionIndex !== null;
 
   if (isLoading) return <LoadingSpinner message="Your interviewer is preparing..."/>;
   if (isGeneratingFeedback) return <LoadingSpinner message="Analyzing your performance and generating feedback..."/>;
-  if (error) return <div className="text-center p-8 bg-white dark:bg-slate-800 rounded-lg shadow-md"><p className="text-red-500">{error}</p></div>;
+  
+  // Note: The main error div was removed to show errors non-intrusively in the footer.
+  // if (error) return <div className="text-center p-8 bg-white dark:bg-slate-800 rounded-lg shadow-md"><p className="text-red-500">{error}</p></div>;
 
   return (
     <div className="flex flex-col h-[90vh] w-full max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700">
@@ -203,7 +341,8 @@ const InterviewScreen: React.FC<InterviewScreenProps> = ({
             <button onClick={handleSkip} disabled={isWaitingForResponse || isReviewing} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"><SkipIcon className="w-5 h-5"/></button>
             <button onClick={handlePause} disabled={isWaitingForResponse} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"><PauseIcon className="w-5 h-5"/></button>
         </div>
-        <form onSubmit={handleSendMessage} className="flex items-center space-x-4">
+        {error && <p className="text-red-500 text-xs text-center mb-2">{error}</p>}
+        <form onSubmit={handleSendMessage} className="flex items-center space-x-2 sm:space-x-4">
           <textarea
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
@@ -219,6 +358,20 @@ const InterviewScreen: React.FC<InterviewScreenProps> = ({
             rows={2}
             disabled={isWaitingForResponse || isReviewing}
           />
+          <button
+              type="button"
+              aria-label={t('micButtonLabel')}
+              onClick={handleMicClick}
+              disabled={!speechSupported || isWaitingForResponse || isReviewing}
+              title={!speechSupported ? "Speech recognition not supported in this browser" : t('micButtonLabel')}
+              className={`p-3 rounded-full transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  isRecording 
+                  ? 'bg-red-500 text-white animate-pulse' 
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600'
+              }`}
+          >
+              <MicrophoneIcon className="w-6 h-6" />
+          </button>
           <button
             type="submit"
             aria-label="Send message"

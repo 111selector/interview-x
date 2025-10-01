@@ -1,6 +1,6 @@
 import React from 'react';
 import { Screen, User } from '../types';
-import { CheckCircleIcon, BotIcon, EditIcon } from './icons';
+import { CheckCircleIcon, BotIcon, EditIcon, BookOpenIcon } from './icons';
 
 interface DashboardScreenProps {
   user: User;
@@ -95,6 +95,19 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user, onNavigate, onR
                     <TrainingStep title="Intermediate" status={user.progress === 'Intermediate' ? 'inprogress' : (user.progress === 'Advanced' ? 'completed' : 'locked')} />
                     <TrainingStep title="Advanced" status={user.progress === 'Advanced' ? 'inprogress' : 'locked'} />
                 </div>
+            </div>
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center mb-3">
+                    <BookOpenIcon className="w-6 h-6 mr-3 text-indigo-500 dark:text-indigo-400" />
+                    <h3 className="font-bold text-slate-800 dark:text-slate-100">{t('careerResources')}</h3>
+                </div>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">{t('careerResourcesSubtitle')}</p>
+                <button
+                    onClick={() => onNavigate(Screen.RESOURCES)}
+                    className="w-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold py-2 px-4 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition"
+                >
+                    {t('viewArticles')}
+                </button>
             </div>
             <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
                 <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-3">{t('currentPlan')}</h3>

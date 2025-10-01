@@ -225,7 +225,7 @@ export const translations = {
   companyNamePlaceholder: { en: 'e.g., Google', es: 'p. ej., Google', fr: 'ex: Google', zh: '例如，谷歌', hi: 'उदा., गूगल' },
   jobRoleLabel: { en: 'Job Role', es: 'Puesto de Trabajo', fr: "Rôle du Poste", zh: '职位角色', hi: 'नौकरी की भूमिका' },
   jobRolePlaceholder: { en: 'e.g., Product Manager', es: 'p. ej., Product Manager', fr: 'ex: Chef de Produit', zh: '例如，产品经理', hi: 'उदा., उत्पाद प्रबंधक' },
-  companyUrlLabel: { en: 'Company Homepage URL', es: 'URL de la Página de Inicio de la Empresa', fr: "URL de la Page d'Accueil de l'Entreprise", zh: '公司主页网址', hi: 'कंपनी होमपेज यूआरएल' },
+  companyUrlLabel: { en: 'Company Homepage URL', es: 'URL de la Página de Inicio de la Empresa', fr: "URL de la Page d'Accueil de l'Entreprise", zh: '公司主页网址', hi: '公司主页 यूआरएल' },
   companyUrlPlaceholder: { en: 'e.g., https://about.google', es: 'p. ej., https://about.google', fr: 'ex: https://about.google', zh: '例如，https://about.google', hi: 'उदा., https://about.google' },
   companyUrlNote: { en: "The AI will analyze this URL to tailor the interviewer's persona and questions.", es: 'La IA analizará esta URL para adaptar la personalidad y las preguntas del entrevistador.', fr: "L'IA analysera cette URL pour adapter la personnalité et les questions de l'intervieweur.", zh: 'AI将分析此URL以定制面试官的角色和问题。', hi: 'एआई साक्षात्कारकर्ता के व्यक्तित्व और प्रश्नों को तैयार करने के लिए इस यूआरएल का विश्लेषण करेगा।' },
   // Feedback Screen
@@ -237,6 +237,7 @@ export const translations = {
   skip: { en: 'Skip', es: 'Saltar', fr: 'Passer', zh: '跳过', hi: 'छोड़ें' },
   back: { en: 'Back', es: 'Atrás', fr: 'Retour', zh: '后退', hi: 'वापस' },
   next: { en: 'Next', es: 'Siguiente', fr: 'Suivant', zh: '前进', hi: 'अगला' },
+  micButtonLabel: { en: 'Use Microphone', es: 'Usar Micrófono', fr: 'Utiliser le Microphone', zh: '使用麦克风', hi: 'माइक्रोफ़ोन का प्रयोग करें' },
   // Profile Screen
   profileTitle: { en: 'Edit Your Profile', es: 'Edita Tu Perfil', fr: 'Modifiez Votre Profil', zh: '编辑您的个人资料', hi: 'अपनी प्रोफ़ाइल संपादित करें' },
   profileSubtitle: { en: 'Manage your account settings and personal information.', es: 'Gestiona la configuración de tu cuenta y tu información personal.', fr: 'Gérez les paramètres de votre compte et vos informations personnelles.', zh: '管理您的帐户设置和个人信息。', hi: 'अपनी खाता सेटिंग्स और व्यक्तिगत जानकारी प्रबंधित करें।' },
@@ -247,7 +248,7 @@ export const translations = {
   saveChangesButton: { en: 'Save Changes', es: 'Guardar Cambios', fr: 'Enregistrer les modifications', zh: '保存更改', hi: 'परिवर्तनों को सहेजें' },
   securityTitle: { en: 'Security', es: 'Seguridad', fr: 'Sécurité', zh: '安全', hi: 'सुरक्षा' },
   changePasswordButton: { en: 'Change Password', es: 'Cambiar Contraseña', fr: 'Changer le mot de passe', zh: '更改密码', hi: 'पासवर्ड बदलें' },
-  // New keys for new features
+  // Promotion Test
   takePromotionTest: { en: 'Take Promotion Test', es: 'Hacer Prueba de Ascenso', fr: 'Passer le Test de Promotion', zh: '参加晋级考试', hi: 'पदोन्नति परीक्षा दें' },
   promotionTestTitle: { en: 'Promotion Test', es: 'Prueba de Ascenso', fr: 'Test de Promotion', zh: '晋级考试', hi: 'पदोन्नति परीक्षा' },
   promotionTestSubtitle: { en: 'Pass this test to advance to the next level.', es: 'Aprueba este test para avanzar al siguiente nivel.', fr: 'Réussissez ce test pour passer au niveau supérieur.', zh: '通过此考试以晋级到下一级别。', hi: 'अगले स्तर पर जाने के लिए यह परीक्षा उत्तीर्ण करें।' },
@@ -259,12 +260,21 @@ export const translations = {
   congratulations: { en: 'Congratulations! You have been promoted to', es: '¡Felicidades! Has sido promovido a', fr: 'Félicitations ! Vous avez été promu au niveau', zh: '恭喜！您已晋升至', hi: 'बधाई हो! आपको पदोन्नत किया गया है' },
   tryAgain: { en: 'Good effort! Study the feedback and try again after your next interview.', es: '¡Buen esfuerzo! Estudia los comentarios e inténtalo de nuevo después de tu próxima entrevista.', fr: 'Bel effort ! Étudiez les commentaires et réessayez après votre prochain entretien.', zh: '做得不错！请研究反馈并在下次面试后重试。', hi: 'अच्छा प्रयास! प्रतिक्रिया का अध्ययन करें और अपने अगले साक्षात्कार के बाद पुनः प्रयास करें।' },
   backToDashboard: { en: 'Back to Dashboard', es: 'Volver al Tablero', fr: 'Retour au Tableau de Bord', zh: '返回仪表板', hi: 'डैशबोर्ड पर वापस जाएं' },
+  // Downloads & License
   downloadAs: { en: 'Download As', es: 'Descargar Como', fr: 'Télécharger en tant que', zh: '下载为', hi: 'इस रूप में डाउनलोड करें' },
   downloadPDF: { en: 'PDF', es: 'PDF', fr: 'PDF', zh: 'PDF', hi: 'पीडीएफ' },
   downloadJSON: { en: 'JSON', es: 'JSON', fr: 'JSON', zh: 'JSON', hi: 'जेएसओएन' },
   downloadsRemaining: { en: 'downloads remaining', es: 'descargas restantes', fr: 'téléchargements restants', zh: '剩余下载次数', hi: 'डाउनलोड शेष' },
   upgradeForDownloads: { en: 'Upgrade your plan to download.', es: 'Actualiza tu plan para descargar.', fr: 'Mettez à niveau votre forfait pour télécharger.', zh: '升级您的套餐以下载。', hi: 'डाउनलोड करने के लिए अपनी योजना को अपग्रेड करें।' },
   licenseAgreement: { en: 'License Agreement', es: 'Acuerdo de Licencia', fr: 'Accord de Licence', zh: '许可协议', hi: 'लाइसेंस समझौता' },
-  licenseText: { en: 'By downloading this content, you agree to the commercial license terms, allowing you to use it for personal and commercial purposes including but not limited to YouTube videos, books, and blogs. You may not resell the content as-is.', es: 'Al descargar este contenido, aceptas los términos de la licencia comercial, que te permite usarlo para fines personales y comerciales, incluidos, entre otros, videos de YouTube, libros y blogs. No puedes revender el contenido tal cual.', fr: "En téléchargeant ce contenu, vous acceptez les termes de la licence commerciale, vous autorisant à l'utiliser à des fins personnelles et commerciales, y compris, mais sans s'y limiter, les vidéos YouTube, les livres et les blogs. Vous ne pouvez pas revendre le contenu tel quel.", zh: '下载此内容即表示您同意商业许可条款，允许您将其用于个人和商业目的，包括但不限于YouTube视频、书籍和博客。您不得按原样转售内容。', hi: 'इस सामग्री को डाउनलोड करके, आप वाणिज्यिक लाइसेंस शर्तों से सहमत होते हैं, जो आपको इसे व्यक्तिगत और व्यावसायिक उद्देश्यों के लिए उपयोग करने की अनुमति देता है, जिसमें यूट्यूब वीडियो, किताबें और ब्लॉग शामिल हैं, लेकिन इन्हीं तक सीमित नहीं है। आप सामग्री को जस का तस नहीं बेच सकते।' },
+  licenseText: { en: 'By downloading this content, you agree to the commercial license terms, allowing you to use it for personal and commercial purposes including but not limited to YouTube videos, books, and blogs. You may not resell the content as-is.', es: 'Al descargar este contenido, aceptas los términos de la licencia comercial, que te permite usarlo para fines personales y comerciales, incluidos, entre otros, videos de YouTube, libros y blogs. No puedes revender el contenido tal cual.', fr: "En téléchargegeant ce contenu, vous acceptez les termes de la licence commerciale, vous autorisant à l'utiliser à des fins personnelles et commerciales, y compris, mais sans s'y limiter, les vidéos YouTube, les livres et les blogs. Vous ne pouvez pas revendre le contenu tel quel.", zh: '下载此内容即表示您同意商业许可条款，允许您将其用于个人和商业目的，包括但不限于YouTube视频、书籍和博客。您不得按原样转售内容。', hi: 'इस सामग्री को डाउनलोड करके, आप वाणिज्यिक लाइसेंस शर्तों से सहमत होते हैं, जो आपको इसे व्यक्तिगत और व्यावसायिक उद्देश्यों के लिए उपयोग करने की अनुमति देता है, जिसमें यूट्यूब वीडियो, किताबें और ब्लॉग शामिल हैं, लेकिन इन्हीं तक सीमित नहीं है। आप सामग्री को जस का तस नहीं बेच सकते।' },
   acceptAndDownload: { en: 'Accept & Download', es: 'Aceptar y Descargar', fr: 'Accepter et Télécharger', zh: '接受并下载', hi: 'स्वीकार करें और डाउनलोड करें' },
+  // Career Resources
+  careerResources: { en: 'Career Resources', es: 'Recursos de Carrera', fr: 'Ressources Carrière', zh: '职业资源', hi: 'करियर संसाधन' },
+  careerResourcesSubtitle: { en: 'Read AI-generated articles to sharpen your skills.', es: 'Lee artículos generados por IA para mejorar tus habilidades.', fr: 'Lisez des articles générés par IA pour affiner vos compétences.', zh: '阅读AI生成的文章来提升您的技能。', hi: 'अपने कौशल को तेज करने के लिए एआई-जनित लेख पढ़ें।' },
+  viewArticles: { en: 'View Articles', es: 'Ver Artículos', fr: 'Voir les Articles', zh: '查看文章', hi: 'लेख देखें' },
+  generatingArticle: { en: 'Generating your article...', es: 'Generando tu artículo...', fr: 'Génération de votre article...', zh: '正在生成您的文章...', hi: 'आपका लेख तैयार हो रहा है...' },
+  backToTopics: { en: 'Back to Topics', es: 'Volver a los Temas', fr: 'Retour aux Sujets', zh: '返回主题', hi: 'विषयों पर वापस' },
+  browseTopics: { en: 'Browse Topics', es: 'Explorar Temas', fr: 'Parcourir les Sujets', zh: '浏览主题', hi: 'विषय ब्राउज़ करें' },
+  browseTopicsSubtitle: { en: 'Select a topic to generate an article with tips and insights.', es: 'Selecciona un tema para generar un artículo con consejos e ideas.', fr: 'Sélectionnez un sujet pour générer un article avec des conseils et des idées.', zh: '选择一个主题以生成包含技巧和见解的文章。', hi: 'युक्तियों और अंतर्दृष्टि के साथ एक लेख उत्पन्न करने के लिए एक विषय का चयन करें।' },
 };

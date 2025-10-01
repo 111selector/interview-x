@@ -1,4 +1,4 @@
-import { GoogleGenAI, Chat, Content, Type } from "@google/genai";
+import { GoogleGenAI, Chat, Content, Type, HarmCategory, HarmBlockThreshold } from "@google/genai";
 import type { InterviewData, ChatMessage, User, TestQuestion, UserAnswer, TestResult } from '../types';
 import { languages } from '../i18n';
 
@@ -15,6 +15,25 @@ const getAiClient = (): GoogleGenAI => {
 };
 
 const model = 'gemini-2.5-flash';
+
+const safetySettings = [
+  {
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+];
 
 const convertMessagesToHistory = (messages: ChatMessage[]): Content[] => {
     return messages.map(msg => ({
@@ -66,6 +85,7 @@ export const initializeChat = async (
     model,
     config: {
       systemInstruction: systemInstruction,
+      safetySettings,
     },
     history: convertMessagesToHistory(history),
   });
@@ -137,6 +157,7 @@ export const generateTest = async (level: User['progress']): Promise<TestQuestio
         config: {
             responseMimeType: 'application/json',
             responseSchema: testSchema,
+            safetySettings,
         },
     });
 
@@ -169,8 +190,46 @@ export const gradeTest = async (questions: TestQuestion[], answers: UserAnswer[]
         config: {
             responseMimeType: 'application/json',
             responseSchema: gradingSchema,
+            safetySettings,
         },
     });
     
     return JSON.parse(response.text);
+};
+
+export const generateArticle = async (topic: string): Promise<string> => {
+    const client = getAiClient();
+    const prompt = `Write a short, insightful, and encouraging blog post (around 300 words) for a job seeker on the topic: "${topic}". 
+    The tone should be professional yet approachable, like a career coach. 
+    Use clear headings with markdown (e.g., "## Key Points") and bullet points or numbered lists where appropriate to make it easy to read. 
+    Do not include a title in the output, just the article body.`;
+
+    const response = await client.models.generateContent({
+        model,
+        contents: prompt,
+        config: {
+            safetySettings,
+        },
+    });
+    return response.text;
+};
+
+export const generateArticleImage = async (topic: string): Promise<string> => {
+    const client = getAiClient();
+    const prompt = `A professional and abstract image representing the concept of "${topic}". 
+    Minimalist, clean, vector art style with a corporate color palette (blues, grays, whites). 
+    The image should be suitable as a header for a blog article on career advice. No text in the image.`;
+
+    const response = await client.models.generateImages({
+        model: 'imagen-4.0-generate-001',
+        prompt,
+        config: {
+            numberOfImages: 1,
+            outputMimeType: 'image/jpeg',
+            aspectRatio: '16:9',
+        },
+    });
+
+    const base64ImageBytes: string = response.generatedImages[0].image.imageBytes;
+    return `data:image/jpeg;base64,${base64ImageBytes}`;
 };

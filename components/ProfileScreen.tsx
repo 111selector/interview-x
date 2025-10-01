@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Screen, User } from '../types';
-import { UserIcon, EditIcon } from './icons';
+import { BotIcon, EditIcon } from './icons';
 
 interface ProfileScreenProps {
   user: User;
@@ -18,6 +18,17 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, onUpdateUser, onNav
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      const MAX_SIZE_MB = 2;
+      const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+      if (file.size > MAX_SIZE_BYTES) {
+        alert(`File is too large. Please select an image under ${MAX_SIZE_MB}MB.`);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePicture(reader.result as string);
@@ -55,11 +66,11 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, onUpdateUser, onNav
                   {profilePicture ? (
                     <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
-                    <UserIcon className="w-12 h-12 text-slate-400" />
+                    <BotIcon className="w-12 h-12 text-slate-400" />
                   )}
                 </div>
-                <input type="file" ref={fileInputRef} onChange={handlePictureChange} accept="image/*" className="hidden" />
-                <button type="button" onClick={() => fileInputRef.current?.click()} className="absolute bottom-0 right-0 bg-white dark:bg-slate-600 p-1.5 rounded-full shadow-md border border-slate-300 dark:border-slate-500 hover:bg-slate-100 dark:hover:bg-slate-500">
+                <input type="file" ref={fileInputRef} onChange={handlePictureChange} accept="image/*" className="hidden" aria-label={t('profilePictureLabel')} />
+                <button type="button" onClick={() => fileInputRef.current?.click()} className="absolute bottom-0 right-0 bg-white dark:bg-slate-600 p-1.5 rounded-full shadow-md border border-slate-300 dark:border-slate-500 hover:bg-slate-100 dark:hover:bg-slate-500" aria-label={t('changePictureButton')}>
                   <EditIcon className="w-4 h-4 text-slate-600 dark:text-slate-200" />
                 </button>
               </div>

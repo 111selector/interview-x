@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { InterviewData } from '../types';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -12,6 +12,21 @@ const SetupForm: React.FC<SetupFormProps> = ({ onStart, t }) => {
   const [jobRole, setJobRole] = useState('');
   const [companyUrl, setCompanyUrl] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  useEffect(() => {
+    try {
+      const savedSettings = localStorage.getItem('interviewSettings');
+      if (savedSettings) {
+        const settings: InterviewData = JSON.parse(savedSettings);
+        setCompanyName(settings.companyName);
+        setJobRole(settings.jobRole);
+        setCompanyUrl(settings.companyUrl);
+      }
+    } catch (e) {
+      console.error("Failed to parse saved interview settings.", e);
+      localStorage.removeItem('interviewSettings'); // Clear corrupted data
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

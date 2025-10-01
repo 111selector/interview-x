@@ -15,12 +15,13 @@ import FeedbackScreen from './components/FeedbackScreen';
 import ProfileScreen from './components/ProfileScreen';
 import TestScreen from './components/TestScreen';
 import TestResultScreen from './components/TestResultScreen';
+import ResourcesScreen from './components/ResourcesScreen';
 
 const App: React.FC = () => {
   const [screen, setScreen] = useState<Screen>(Screen.LANDING);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
-  const [language, setLanguage] = useState<string>('en');
+  const [language, setLanguage] = useState<string>(() => localStorage.getItem('preferredLanguage') || 'en');
   const [theme, setTheme] = useState<Theme>(localStorage.theme || Theme.LIGHT);
 
   const [interviewData, setInterviewData] = useState<InterviewData | null>(null);
@@ -40,6 +41,10 @@ const App: React.FC = () => {
     root.classList.add(theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('preferredLanguage', language);
+  }, [language]);
 
   useEffect(() => {
     try {
@@ -63,7 +68,7 @@ const App: React.FC = () => {
   }, [language]);
 
   const handleNavigate = useCallback((newScreen: Screen, data?: any) => {
-    const screensRequiringApiKey = [Screen.SETUP, Screen.INTERVIEW, Screen.TEST];
+    const screensRequiringApiKey = [Screen.SETUP, Screen.INTERVIEW, Screen.TEST, Screen.RESOURCES];
     if (!process.env.API_KEY && screensRequiringApiKey.includes(newScreen)) {
       setError('API_KEY environment variable not set. Please configure it to use the application.');
       return;
@@ -119,6 +124,7 @@ const App: React.FC = () => {
   }, [user, handleNavigate]);
 
   const handleStartInterview = useCallback((data: InterviewData) => {
+    localStorage.setItem('interviewSettings', JSON.stringify(data));
     handleClearPausedInterview();
     setInterviewData(data);
     setChatHistory([]);
@@ -212,11 +218,13 @@ const App: React.FC = () => {
       case Screen.SETUP:
         return <SetupForm onStart={handleStartInterview} t={t} />;
       case Screen.INTERVIEW:
-        return interviewData && user && <InterviewScreen user={user} interviewData={interviewData} initialMessages={chatHistory} onShowFeedback={handleShowFeedback} onPause={setPausedInterview} onNavigate={handleNavigate} language={language} />;
+        return interviewData && user && <InterviewScreen user={user} interviewData={interviewData} initialMessages={chatHistory} onShowFeedback={handleShowFeedback} onPause={setPausedInterview} onNavigate={handleNavigate} language={language} t={t} />;
       case Screen.FEEDBACK:
         return user && <FeedbackScreen user={user} feedback={feedback} chatHistory={chatHistory} onRestart={handleRestart} onUpdateUser={handleUpdateUser} t={t} />;
       case Screen.PROFILE:
         return user && <ProfileScreen user={user} onUpdateUser={handleUpdateUser} onNavigate={handleNavigate} t={t} />;
+      case Screen.RESOURCES:
+        return <ResourcesScreen onNavigate={handleNavigate} t={t} />;
       case Screen.TEST:
         return <TestScreen questions={testQuestions} onSubmit={handleFinishTest} onCancel={handleRestart} t={t} />;
       case Screen.TEST_RESULTS:
