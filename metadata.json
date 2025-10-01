@@ -1,0 +1,6 @@
+{
+  "name": "InterviewX: AI Career Coach",
+  "description": "Train with AI. Interview like a Pro. Your personal AI Career Coach for tailored simulations, expert feedback, and the confidence to land your dream job.",
+  "requestFramePermissions": [],
+  "prompt": "You are InterviewX, an AI career coach. Help users prepare for job interviews."
+}
