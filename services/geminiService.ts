@@ -170,19 +170,38 @@ const gradingSchema = {
     properties: {
         score: { type: Type.NUMBER, description: 'A score from 0 to 100 based on the correctness of the answers.' },
         passed: { type: Type.BOOLEAN, description: 'True if score is 70 or above.' },
-        feedback: { type: Type.STRING, description: 'A concise, constructive feedback summary on the answers, explaining why some were right or wrong. Address the user directly ("You did well on...").' },
+        overallFeedback: { type: Type.STRING, description: 'A concise, constructive summary of the overall performance on the test. Address the user directly ("You did well on...").' },
+        detailedFeedback: {
+            type: Type.ARRAY,
+            description: 'An array of feedback objects for each question answered.',
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    questionId: { type: Type.STRING, description: 'The ID of the question.' },
+                    userAnswer: { type: Type.STRING, description: "The user's selected answer." },
+                    isCorrect: { type: Type.BOOLEAN, description: 'Whether the user answer was correct.' },
+                    feedback: { type: Type.STRING, description: 'A short explanation of why the answer is correct or incorrect.' },
+                    correctAnswer: { type: Type.STRING, description: 'The text of the correct answer option.' },
+                },
+                required: ['questionId', 'userAnswer', 'isCorrect', 'feedback', 'correctAnswer'],
+            },
+        },
     },
-    required: ['score', 'passed', 'feedback'],
+    required: ['score', 'passed', 'overallFeedback', 'detailedFeedback'],
 };
 
 export const gradeTest = async (questions: TestQuestion[], answers: UserAnswer[]): Promise<TestResult> => {
     const client = getAiClient();
-    const prompt = `A candidate has taken a test. Here are the questions and their answers. Please grade the test. The goal is to assess general professional aptitude. A passing score is 70%. Provide a numeric score and constructive feedback.
-    
-    Questions: ${JSON.stringify(questions.map(q => ({id: q.id, question: q.question})))}
-    Candidate's Answers: ${JSON.stringify(answers)}
-    
-    Return the result in the specified JSON format. Your grading should be based on a general understanding of professional best practices.`;
+    const prompt = `A candidate has taken a test. Here are the questions with their options, and the candidate's answers. Please grade the test.
+
+For each question, determine if the candidate's answer is correct. Then, provide a brief feedback explaining why the answer is correct or incorrect, and explicitly state the correct answer from the options.
+
+Finally, calculate an overall score (percentage, where each question is weighted equally), determine if they passed (a score of 70% or higher is a pass), and write a short, overall feedback summary.
+
+Questions and Options: ${JSON.stringify(questions)}
+Candidate's Answers: ${JSON.stringify(answers)}
+
+Return the complete result in the specified JSON format. Your grading should be based on a general understanding of professional best practices. The 'correctAnswer' you provide must be one of the options from the question.`;
 
     const response = await client.models.generateContent({
         model,

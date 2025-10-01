@@ -80,9 +80,18 @@ export interface UserAnswer {
     answer: string;
 }
 
+export interface AnswerFeedback {
+    questionId: string;
+    userAnswer: string;
+    isCorrect: boolean;
+    feedback: string;
+    correctAnswer: string;
+}
+
 export interface TestResult {
     score: number; // percentage
-    feedback: string;
+    overallFeedback: string;
+    detailedFeedback: AnswerFeedback[];
     passed: boolean;
 }
 

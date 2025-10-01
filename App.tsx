@@ -228,7 +228,7 @@ const App: React.FC = () => {
       case Screen.TEST:
         return <TestScreen questions={testQuestions} onSubmit={handleFinishTest} onCancel={handleRestart} t={t} />;
       case Screen.TEST_RESULTS:
-        return user && testResult && <TestResultScreen result={testResult} onContinue={handleRestart} nextLevel={user.progress} t={t} />;
+        return user && testResult && <TestResultScreen questions={testQuestions} result={testResult} onContinue={handleRestart} nextLevel={user.progress} t={t} />;
       default:
         return <LandingScreen onNavigate={handleNavigate} t={t} />;
     }
