@@ -1,0 +1,174 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with settings and interview progress",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "User's display name"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "User's email address"
+        },
+        "plan": {
+          "type": "string",
+          "enum": ["Free", "Pro", "Enterprise"],
+          "description": "Subscription plan tier"
+        },
+        "progress": {
+          "type": "string",
+          "enum": ["Beginner", "Intermediate", "Advanced"],
+          "description": "Career interview proficiency stage"
+        },
+        "interviewsCompleted": {
+          "type": "number",
+          "description": "Number of completed interviews"
+        },
+        "downloadsUsed": {
+          "type": "number",
+          "description": "Count of report downloads used"
+        },
+        "profilePicture": {
+          "type": "string",
+          "maxLength": 2048,
+          "description": "User profile picture URL"
+        },
+        "provider": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Authentication provider"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of account creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      },
+      "required": ["name", "email", "plan", "progress"]
+    },
+    "InterviewHistory": {
+      "title": "InterviewHistory",
+      "description": "Record of a completed interview session and feedback",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Owner user ID"
+        },
+        "jobRole": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Target job title"
+        },
+        "companyName": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Target company"
+        },
+        "jobDescription": {
+          "type": "string",
+          "maxLength": 5000,
+          "description": "Job description or notes"
+        },
+        "language": {
+          "type": "string",
+          "maxLength": 10,
+          "description": "Interview language code"
+        },
+        "feedback": {
+          "type": "string",
+          "maxLength": 20000,
+          "description": "AI analysis and feedback"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp when interview occurred"
+        }
+      },
+      "required": ["userId", "jobRole", "feedback"]
+    },
+    "PausedSession": {
+      "title": "PausedSession",
+      "description": "Saved active interview session that can be resumed",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Owner user ID"
+        },
+        "language": {
+          "type": "string",
+          "maxLength": 10,
+          "description": "Interview language code"
+        },
+        "savedAt": {
+          "type": "string",
+          "description": "ISO timestamp when session was paused"
+        }
+      },
+      "required": ["userId", "language"]
+    },
+    "TestRecord": {
+      "title": "TestRecord",
+      "description": "Skill promotion test evaluation record",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Owner user ID"
+        },
+        "level": {
+          "type": "string",
+          "enum": ["Beginner", "Intermediate", "Advanced"],
+          "description": "Level tested"
+        },
+        "passed": {
+          "type": "boolean",
+          "description": "Whether user passed"
+        },
+        "score": {
+          "type": "number",
+          "description": "Achieved score"
+        },
+        "total": {
+          "type": "number",
+          "description": "Total possible questions"
+        },
+        "completedAt": {
+          "type": "string",
+          "description": "ISO timestamp"
+        }
+      },
+      "required": ["userId", "level", "passed"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Private user profiles, isolated to the authenticated owner"
+    },
+    "/users/{userId}/interviews/{interviewId}": {
+      "schema": "InterviewHistory",
+      "description": "Private interview history records strictly isolated to the user"
+    },
+    "/users/{userId}/pausedSession/{sessionId}": {
+      "schema": "PausedSession",
+      "description": "Active in-progress paused interview session for the user"
+    },
+    "/users/{userId}/testResults/{testId}": {
+      "schema": "TestRecord",
+      "description": "Private test results for the user"
+    }
+  }
+}

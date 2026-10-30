@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Health check / connection test
+    match /test/connection {
+      allow get: if true;
+    }
+
+    // Private user profiles
+    match /users/{userId} {
+      allow get, create, update, delete: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      // User's private interview history - isolated strictly to the user
+      match /interviews/{interviewId} {
+        allow read, write: if isOwner(userId) && isValidId(userId);
+      }
+
+      // User's private paused interview session
+      match /pausedSession/{sessionId} {
+        allow read, write: if isOwner(userId) && isValidId(userId);
+      }
+
+      // User's private test promotion results
+      match /testResults/{testId} {
+        allow read, write: if isOwner(userId) && isValidId(userId);
+      }
+    }
+  }
+}
