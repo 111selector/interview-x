@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { 
   Screen, 
   Plan, 
@@ -383,23 +384,26 @@ const App: React.FC = () => {
   const showHeader = isAuthenticated && ![Screen.INTERVIEW].includes(screen);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans text-slate-800 dark:text-slate-200 flex flex-col transition-colors duration-300">
-      {showHeader && user && (
-        <Header 
-          user={user} 
-          language={language}
-          theme={theme}
-          onLanguageChange={setLanguage}
-          onLogout={handleLogout}
-          onNavigate={handleNavigate}
-          onToggleTheme={toggleTheme}
-          t={t}
-        />
-      )}
-      <main className="w-full flex-grow flex items-center justify-center p-4">
-        {renderContent()}
-      </main>
-    </div>
+    <>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans text-slate-800 dark:text-slate-200 flex flex-col transition-colors duration-300">
+        {showHeader && user && (
+          <Header 
+            user={user} 
+            language={language}
+            theme={theme}
+            onLanguageChange={setLanguage}
+            onLogout={handleLogout}
+            onNavigate={handleNavigate}
+            onToggleTheme={toggleTheme}
+            t={t}
+          />
+        )}
+        <main className="w-full flex-grow flex items-center justify-center p-4">
+          {renderContent()}
+        </main>
+      </div>
+      <Analytics />
+    </>
   );
 };
 
