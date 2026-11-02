@@ -60,6 +60,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onNavigate, t
         setInfoMessage(
           `To activate ${providerName}: In Firebase Console > Authentication > Sign-in method, enable ${providerName}. In the meantime, you can sign in with your Google or Microsoft account!`
         );
+      } else if (code === 'auth/unauthorized-domain') {
+        const currentDomain = typeof window !== 'undefined' ? window.location.hostname : 'your domain';
+        console.warn(`[Auth] Unauthorized domain: ${currentDomain}`);
+        setErrorMessage(`Domain not authorized: "${currentDomain}" needs to be added to Firebase.`);
+        setInfoMessage(
+          `Go to Firebase Console (Project: upheld-encoder-66tvw) > Authentication > Settings > Authorized domains > Click "Add domain" and enter "${currentDomain}".`
+        );
       } else if (code === 'auth/network-request-failed') {
         console.warn(`[Auth] Network issue during ${providerName} sign-in.`);
         setErrorMessage('Network connection error. Please check your internet connection.');
